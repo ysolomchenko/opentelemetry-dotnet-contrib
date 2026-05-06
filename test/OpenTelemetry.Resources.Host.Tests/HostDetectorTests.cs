@@ -147,6 +147,18 @@ public class HostDetectorTests
         var id = HostDetector.ParseMacOsOutput(MacOSMachineIdOutput);
         Assert.Equal("1AB2345C-03E4-57D4-A375-1234D48DE123", id);
     }
+
+    [Fact]
+    public void TestMacOsMachineIdUsesAbsoluteIoregPath()
+    {
+        var startInfo = HostDetector.CreateMacOsIoregStartInfo();
+
+        Assert.Equal("/usr/sbin/ioreg", startInfo.FileName);
+        Assert.Equal("-rd1 -c IOPlatformExpertDevice", startInfo.Arguments);
+        Assert.False(startInfo.UseShellExecute);
+        Assert.True(startInfo.RedirectStandardOutput);
+        Assert.True(startInfo.RedirectStandardError);
+    }
 #endif
 
     [Fact]

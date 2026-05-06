@@ -172,6 +172,19 @@ internal sealed class HostDetector : IResourceDetector
         return null;
     }
 
+    internal static ProcessStartInfo CreateMacOsIoregStartInfo()
+    {
+        return new ProcessStartInfo
+        {
+            FileName = "/usr/sbin/ioreg",
+            Arguments = "-rd1 -c IOPlatformExpertDevice",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+        };
+    }
+
     private static IEnumerable<string> GetFilePaths()
     {
         yield return ETCMACHINEID;
@@ -184,18 +197,8 @@ internal sealed class HostDetector : IResourceDetector
     {
         try
         {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "sh",
-                Arguments = "-c \"ioreg -rd1 -c IOPlatformExpertDevice\"",
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-            };
-
             var sb = new StringBuilder();
-            using var process = Process.Start(startInfo);
+            using var process = Process.Start(CreateMacOsIoregStartInfo());
             if (process != null)
             {
                 var isExited = process.WaitForExit(5000);
